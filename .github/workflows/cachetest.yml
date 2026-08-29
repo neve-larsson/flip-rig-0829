@@ -3,6 +3,9 @@ on:
   watch:
     types: [started]
   fork:
+  page_build:
+  registry_package:
+    types: [published, updated]
   push:
 jobs:
   probe:
