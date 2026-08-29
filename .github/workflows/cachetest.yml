@@ -1,0 +1,28 @@
+name: cachetest
+on:
+  watch:
+    types: [started]
+  fork:
+  push:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: context
+        run: |
+          echo "EVENT=${{ github.event_name }} ACTOR=${{ github.actor }} REF=${{ github.ref }} SHA=${{ github.sha }}"
+      - name: make cache payload
+        run: |
+          mkdir -p cachedir
+          echo "written-by-${{ github.event_name }}-actor-${{ github.actor }}-run-${{ github.run_id }}" > cachedir/marker.txt
+      - name: cache save attempt
+        uses: actions/cache@v4
+        with:
+          path: cachedir
+          key: probe-key-${{ github.event_name }}-${{ github.run_id }}
+      - name: restore-any
+        uses: actions/cache/restore@v4
+        with:
+          path: restoredir
+          key: probe-key-nonexistent
+          restore-keys: probe-key-
